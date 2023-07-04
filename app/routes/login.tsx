@@ -1,11 +1,13 @@
 // app/routes/login.tsx
-import { useState } from 'react';
+
+import { useState, useRef, useEffect } from 'react';
 import {
   ActionFunction,
   json,
   LoaderFunction,
   redirect,
 } from '@remix-run/node';
+import { useActionData } from '@remix-run/react';
 
 import { Layout } from '~/components/layout';
 import { FormField } from '~/components/form-field';
@@ -22,7 +24,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  // validation
+  // Start validation
   const form = await request.formData();
   const action = form.get('_action');
   const email = form.get('email');
@@ -30,6 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
   let firstName = form.get('firstName');
   let lastName = form.get('lastName');
 
+  // If not all data was passed, error
   if (
     typeof action !== 'string' ||
     typeof email !== 'string' ||
@@ -38,6 +41,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ error: `Invalid Form Data`, form: action }, { status: 400 });
   }
 
+  // If not all data was passed, error
   if (
     action === 'register' &&
     (typeof firstName !== 'string' || typeof lastName !== 'string')
@@ -45,6 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
     return json({ error: `Invalid Form Data`, form: action }, { status: 400 });
   }
 
+  // Validate email & password
   const errors = {
     email: validateEmail(email),
     password: validatePassword(password),
@@ -56,6 +61,7 @@ export const action: ActionFunction = async ({ request }) => {
       : {}),
   };
 
+  //  If there were any errors, return them
   if (Object.values(errors).some(Boolean))
     return json(
       {
@@ -65,8 +71,10 @@ export const action: ActionFunction = async ({ request }) => {
       },
       { status: 400 }
     );
-  // end validation
+  // End validation
 
+  // conditionally run the login or register functions
+  // depending on the action value
   switch (action) {
     case 'login': {
       return await login({ email, password });
@@ -82,12 +90,16 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Login() {
+  const actionData = useActionData();
+  const firstLoad = useRef(true);
   const [action, setAction] = useState('login');
+  const [errors, setErrors] = useState(actionData?.errors || {});
+  const [formError, setFormError] = useState(actionData?.error || '');
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
+    email: actionData?.fields?.email || '',
+    password: actionData?.fields?.password || '',
+    firstName: actionData?.fields?.lastName || '',
+    lastName: actionData?.fields?.firstName || '',
   });
 
   // Updates the form data when an input changes
@@ -97,6 +109,32 @@ export default function Login() {
   ) => {
     setFormData((form) => ({ ...form, [field]: event.target.value }));
   };
+
+  useEffect(() => {
+    // Clear the form if we switch forms
+    if (!firstLoad.current) {
+      const newState = {
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+      };
+      setErrors(newState);
+      setFormError('');
+      setFormData(newState);
+    }
+  }, [action]);
+
+  useEffect(() => {
+    if (!firstLoad.current) {
+      setFormError('');
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    // We don't want to reset errors on page load because we want to see them
+    firstLoad.current = false;
+  }, []);
 
   return (
     <Layout>
