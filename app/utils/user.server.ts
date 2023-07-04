@@ -1,4 +1,5 @@
 // app/utils/user.server.ts
+
 import bcrypt from 'bcryptjs';
 import type { RegisterForm } from './types.server';
 import { prisma } from './prisma.server';
