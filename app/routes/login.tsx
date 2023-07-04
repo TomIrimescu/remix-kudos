@@ -157,11 +157,15 @@ export default function Login() {
         </p>
 
         <form method='POST' className='rounded-2xl bg-gray-200 p-6 w-96'>
+          <div className='text-xs font-semibold text-center tracking-wide text-red-500 w-full'>
+            {formError}
+          </div>
           <FormField
             htmlFor='email'
             label='Email'
             value={formData.email}
             onChange={(e) => handleInputChange(e, 'email')}
+            error={errors?.email}
           />
 
           <FormField
@@ -170,6 +174,7 @@ export default function Login() {
             label='Password'
             value={formData.password}
             onChange={(e) => handleInputChange(e, 'password')}
+            error={errors?.password}
           />
 
           {action === 'register' && (
@@ -179,12 +184,14 @@ export default function Login() {
                 label='First Name'
                 onChange={(e) => handleInputChange(e, 'firstName')}
                 value={formData.firstName}
+                error={errors?.firstName}
               />
               <FormField
                 htmlFor='lastName'
                 label='Last Name'
                 onChange={(e) => handleInputChange(e, 'lastName')}
                 value={formData.lastName}
+                error={errors?.lastName}
               />
             </>
           )}
