@@ -1,6 +1,6 @@
 // app/routes/home.tsx
 
-import { useLoaderData } from '@remix-run/react';
+import { Outlet, useLoaderData } from '@remix-run/react';
 import { json, LoaderFunction } from '@remix-run/node';
 
 import { requireUserId } from '~/utils/auth.server';
@@ -18,6 +18,7 @@ export default function Home() {
   const { users } = useLoaderData();
   return (
     <Layout>
+      <Outlet />
       <div className='h-full flex'>
         <UserPanel users={users} />
         <div className='flex-1'></div>

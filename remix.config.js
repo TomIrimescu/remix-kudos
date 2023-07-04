@@ -16,6 +16,6 @@ module.exports = {
     v2_headers: true,
     v2_meta: false,
     v2_normalizeFormMethod: true,
-    v2_routeConvention: true,
+    v2_routeConvention: false,
   },
 };
