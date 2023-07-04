@@ -1,6 +1,11 @@
 // app/routes/login.tsx
 import { useState } from 'react';
-import { ActionFunction, json, redirect } from '@remix-run/node';
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+  redirect,
+} from '@remix-run/node';
 
 import { Layout } from '~/components/layout';
 import { FormField } from '~/components/form-field';
@@ -9,7 +14,12 @@ import {
   validateName,
   validatePassword,
 } from '~/utils/validators.server';
-import { login, register } from '~/utils/auth.server';
+import { getUser, login, register } from '~/utils/auth.server';
+
+export const loader: LoaderFunction = async ({ request }) => {
+  // If there's already a user in the session, redirect to the home page
+  return (await getUser(request)) ? redirect('/') : null;
+};
 
 export const action: ActionFunction = async ({ request }) => {
   // validation
