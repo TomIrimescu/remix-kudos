@@ -91,10 +91,10 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Login() {
   const actionData = useActionData();
-  const firstLoad = useRef(true);
-  const [action, setAction] = useState('login');
-  const [errors, setErrors] = useState(actionData?.errors || {});
   const [formError, setFormError] = useState(actionData?.error || '');
+  const [errors, setErrors] = useState(actionData?.errors || {});
+  const [action, setAction] = useState('login');
+  const firstLoad = useRef(true);
   const [formData, setFormData] = useState({
     email: actionData?.fields?.email || '',
     password: actionData?.fields?.password || '',
